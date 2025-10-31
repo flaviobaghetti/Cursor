@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="sk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Focaccia Progress Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Montserrat:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --olive: #6c7a47;
+        --sunset: #f2a65a;
+        --cream: #f9efe5;
+        --deep-olive: #3f4827;
+        --shadow: rgba(20, 20, 20, 0.45);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: 'Montserrat', sans-serif;
+        background: linear-gradient(180deg, #fdf9f2 0%, #f5eee3 100%);
+        color: #363636;
+      }
+
+      header {
+        position: relative;
+        min-height: 72vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 3rem 1.5rem;
+        overflow: hidden;
+        background-color: #111;
+      }
+
+      header::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: url('https://images.unsplash.com/photo-1612875002868-1a60bd062ed8?auto=format&fit=crop&w=1400&q=80');
+        background-size: cover;
+        background-position: center;
+        filter: brightness(0.65);
+        transform: scale(1.05);
+      }
+
+      header::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          120deg,
+          rgba(26, 33, 20, 0.75) 0%,
+          rgba(26, 33, 20, 0.4) 40%,
+          rgba(26, 33, 20, 0.75) 100%
+        );
+      }
+
+      .hero-content {
+        position: relative;
+        z-index: 1;
+        max-width: 640px;
+        color: #fef6ec;
+        text-shadow: 0 0 8px rgba(0, 0, 0, 0.65);
+        border: 2px solid rgba(255, 239, 213, 0.5);
+        padding: 2.25rem 2rem;
+        border-radius: 18px;
+        background-color: rgba(22, 28, 20, 0.4);
+        backdrop-filter: blur(6px);
+      }
+
+      .hero-content h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(2.8rem, 6vw, 3.6rem);
+        margin: 0;
+        letter-spacing: 0.04em;
+      }
+
+      .hero-highlight {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.95rem;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        background: rgba(242, 166, 90, 0.15);
+        border: 1px solid rgba(242, 166, 90, 0.4);
+        padding: 0.45rem 1.1rem;
+        border-radius: 9999px;
+        margin-bottom: 1.5rem;
+        animation: pulse 2.8s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          box-shadow: 0 0 0 0 rgba(242, 166, 90, 0.45);
+        }
+        70% {
+          box-shadow: 0 0 0 16px rgba(242, 166, 90, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(242, 166, 90, 0);
+        }
+      }
+
+      .hero-content p {
+        font-size: 1.05rem;
+        line-height: 1.65;
+        margin: 1.5rem 0 2rem;
+      }
+
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: center;
+      }
+
+      .hero-actions a {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.85rem 1.6rem;
+        border-radius: 999px;
+        background: var(--sunset);
+        color: #1c1c1c;
+        text-decoration: none;
+        font-weight: 600;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        box-shadow: 0 10px 24px rgba(242, 166, 90, 0.35);
+      }
+
+      .hero-actions a:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 14px 30px rgba(242, 166, 90, 0.45);
+      }
+
+      main {
+        max-width: 1100px;
+        margin: -4rem auto 4rem;
+        padding: 0 1.5rem;
+      }
+
+      .card {
+        background: #fffdf8;
+        border-radius: 20px;
+        box-shadow: 0 16px 40px rgba(108, 122, 71, 0.08);
+        padding: 2.25rem;
+        margin-bottom: 2rem;
+        border: 1px solid rgba(108, 122, 71, 0.12);
+      }
+
+      .card h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        margin: 0 0 1rem;
+        color: var(--deep-olive);
+      }
+
+      .timer {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        align-items: center;
+      }
+
+      .timer-display {
+        font-size: clamp(2.8rem, 6vw, 3.6rem);
+        letter-spacing: 0.1em;
+        font-variant-numeric: tabular-nums;
+        padding: 1.1rem 2.4rem;
+        border: 2px solid rgba(108, 122, 71, 0.25);
+        border-radius: 16px;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(249, 239, 229, 0.9));
+        box-shadow: inset 0 6px 16px rgba(255, 255, 255, 0.6);
+      }
+
+      .timer-controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        justify-content: center;
+      }
+
+      .timer-controls button {
+        padding: 0.75rem 1.8rem;
+        border: none;
+        border-radius: 999px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        color: #fff;
+      }
+
+      .timer-controls button.primary {
+        background: var(--olive);
+        box-shadow: 0 8px 20px rgba(108, 122, 71, 0.35);
+      }
+
+      .timer-controls button.secondary {
+        background: var(--deep-olive);
+        box-shadow: 0 8px 20px rgba(63, 72, 39, 0.35);
+      }
+
+      .timer-controls button.reset {
+        background: #d36e5a;
+        box-shadow: 0 8px 20px rgba(211, 110, 90, 0.35);
+      }
+
+      .timer-controls button:hover {
+        transform: translateY(-2px);
+      }
+
+      .preparation-steps {
+        display: grid;
+        gap: 1.5rem;
+      }
+
+      .step {
+        display: grid;
+        gap: 0.75rem;
+        padding: 1.35rem 1.4rem;
+        border-radius: 14px;
+        border: 1px solid rgba(108, 122, 71, 0.2);
+        background: rgba(255, 255, 255, 0.85);
+        transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+      }
+
+      .step:hover {
+        transform: translateY(-2px);
+        border-color: var(--sunset);
+      }
+
+      .step-header {
+        display: flex;
+        gap: 1rem;
+        align-items: flex-start;
+      }
+
+      .step-header input[type='checkbox'] {
+        width: 22px;
+        height: 22px;
+        margin-top: 0.2rem;
+        accent-color: var(--olive);
+        cursor: pointer;
+      }
+
+      .step-header h3 {
+        margin: 0;
+        font-size: 1.15rem;
+        color: var(--deep-olive);
+      }
+
+      .step p {
+        margin: 0;
+        line-height: 1.6;
+      }
+
+      .step-footer {
+        display: flex;
+        gap: 1.25rem;
+        flex-wrap: wrap;
+        font-size: 0.9rem;
+        color: #6f7a74;
+      }
+
+      .progress-tracker {
+        margin-top: 1.5rem;
+      }
+
+      .progress-bar {
+        height: 14px;
+        border-radius: 999px;
+        background: rgba(108, 122, 71, 0.15);
+        overflow: hidden;
+      }
+
+      .progress-bar-fill {
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--olive), var(--sunset));
+        border-radius: 999px;
+        transition: width 0.35s ease;
+      }
+
+      .progress-status {
+        margin-top: 0.75rem;
+        font-weight: 600;
+        color: var(--deep-olive);
+        text-align: right;
+      }
+
+      footer {
+        text-align: center;
+        padding: 2rem 1.5rem 3rem;
+        color: rgba(54, 54, 54, 0.7);
+      }
+
+      footer a {
+        color: var(--olive);
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      footer a:hover {
+        text-decoration: underline;
+      }
+
+      @media (max-width: 720px) {
+        header {
+          padding: 3.5rem 1rem;
+        }
+
+        .hero-content {
+          padding: 2rem 1.5rem;
+        }
+
+        main {
+          margin-top: -3rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="hero-content">
+        <div class="hero-highlight">Talianska pulzuj?ca n?lada</div>
+        <h1>Pr?prava focaccie bez stresu</h1>
+        <p>
+          Sleduj ka?d? krok pod?a receptu z videa a dopraj si k?udn? priebeh pr?pravy
+          vo?avej, hranatej focaccie. Priebe?n? ?asova?, jasn? kroky a jemn? pripomienky ti
+          pom??u dosta? sa z mie?ania a? po pe?enie s rovnakou ?ahkos?ou, ak? m? focaccia
+          samotn?.
+        </p>
+        <div class="hero-actions">
+          <a href="https://www.youtube.com/watch?v=O1WQTKuWWfM" target="_blank" rel="noopener">
+            ?? Pozrie? video n?vod
+          </a>
+          <a href="#progress">Sko?i? na kroky</a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="card timer" aria-labelledby="timer-title">
+        <h2 id="timer-title">?asova? pr?pravy</h2>
+        <div class="timer-display" id="timer-display">00:00:00</div>
+        <div class="timer-controls">
+          <button class="primary" id="start-btn">Spusti?</button>
+          <button class="secondary" id="stop-btn" disabled>Zastavi?</button>
+          <button class="reset" id="reset-btn" disabled>Reset</button>
+        </div>
+        <p style="max-width: 420px; text-align: center; color: #6f7a74;">
+          Tip: Spus? ?asova? pri krokoch, kde potrebuje? kontrolova? kysnutie alebo odpo?inok.
+          ?asova? nezastav? tikot talianskej hudby, ale teba ?no.
+        </p>
+      </section>
+
+      <section class="card" id="progress" aria-labelledby="progress-title">
+        <h2 id="progress-title">Kroky pr?pravy pod?a videa</h2>
+        <p style="margin-bottom: 1.5rem; color: #6f7a74;">
+          Prejdi si cel? video raz, potom sa vracaj k jednotliv?m krokom. Ka?d? krok ozna?,
+          ke? ho dokon??? ? progres bar ti uk??e, ako bl?zko si k rozvo?anej focacci.
+        </p>
+        <div class="preparation-steps">
+          <article class="step">
+            <div class="step-header">
+              <input type="checkbox" id="step-1" />
+              <div>
+                <h3>Nak?m kv?sok a priprav vodu</h3>
+                <p>
+                  Zmie?aj vla?n? vodu, trochu dro?dia (alebo akt?vny kv?sok) a ly?i?ku medu, ako vo videu.
+                  Nechaj min?tku prebudi? bubliny.
+                </p>
+              </div>
+            </div>
+            <div class="step-footer">
+              <span>Navrhovan? ?as: ~5 min</span>
+              <span>Video: 00:46</span>
+            </div>
+          </article>
+
+          <article class="step">
+            <div class="step-header">
+              <input type="checkbox" id="step-2" />
+              <div>
+                <h3>Primie?aj m?ku a vytvor autol?zu</h3>
+                <p>
+                  Postupne prid?vaj m?ku, mie?aj ly?icou do spojenia a nechaj cesto oddychova?, aby sa m?ka
+                  napila vody a cesto sa stalo hedv?bnym.
+                </p>
+              </div>
+            </div>
+            <div class="step-footer">
+              <span>Odpo?inok: 15 ? 20 min</span>
+              <span>Video: 02:32</span>
+            </div>
+          </article>
+
+          <article class="step">
+            <div class="step-header">
+              <input type="checkbox" id="step-3" />
+              <div>
+                <h3>Vpracuj so? a olivov? olej</h3>
+                <p>
+                  Dochu? cesto so?ou, prelo? a mas?ruj ho prstami, potom pomaly vmie?aj extra panensk? olivov? olej,
+                  k?m sa v?etko neprepoj? a cesto zostane pru?n?.
+                </p>
+              </div>
+            </div>
+            <div class="step-footer">
+              <span>Navrhovan? ?as: ~10 min</span>
+              <span>Video: 04:18</span>
+            </div>
+          </article>
+
+          <article class="step">
+            <div class="step-header">
+              <input type="checkbox" id="step-4" />
+              <div>
+                <h3>Natiahni a prelo? pre silu lepku</h3>
+                <p>
+                  Po kr?tkom oddychu urob s?riu natiahnut? a prelo?en? ka?d?ch 30 min?t. Vo videu to n?vrhuj?
+                  urobi? 3-kr?t, k?m cesto z?ska ?trukt?ru a vytvor? jemn? bublinky.
+                </p>
+              </div>
+            </div>
+            <div class="step-footer">
+              <span>Celkov? ?as: 90 min</span>
+              <span>Video: 06:12</span>
+            </div>
+          </article>
+
+          <article class="step">
+            <div class="step-header">
+              <input type="checkbox" id="step-5" />
+              <div>
+                <h3>Nechaj cesto zdvojn?sobi? objem</h3>
+                <p>
+                  Prenes cesto do mierne olejom potrenej misy, prikry ju a nechaj kysn??, k?m objem zdvojn?sob?.
+                  Sleduj bublinky a pru?nos?.
+                </p>
+              </div>
+            </div>
+            <div class="step-footer">
+              <span>Kysnutie: 60 ? 90 min</span>
+              <span>Video: 08:45</span>
+            </div>
+          </article>
+
+          <article class="step">
+            <div class="step-header">
+              <input type="checkbox" id="step-6" />
+              <div>
+                <h3>Presu? do hranatej formy</h3>
+                <p>
+                  Vylo? hranat? plech (cca 30 ? 30 cm) papierom, bohato ho potri olivov?m olejom a prenes cesto.
+                  Jemne ho roztiahni prstami od stredu k okrajom bez trhania ?trukt?ry.
+                </p>
+              </div>
+            </div>
+            <div class="step-footer">
+              <span>Pr?prava: ~10 min</span>
+              <span>Video: 10:20</span>
+            </div>
+          </article>
+
+          <article class="step">
+            <div class="step-header">
+              <input type="checkbox" id="step-7" />
+              <div>
+                <h3>Druh? kysnutie a ochutenie</h3>
+                <p>
+                  Nechaj cesto v plechu znovu nad?chnu? 30 ? 40 min, potom prstami vytvor ikonick? jamky.
+                  Pokvapkaj olejom, pridaj ?tipku hrubej soli, ?erstv? rozmar?n a pod?a videa cherry paradajky.
+                </p>
+              </div>
+            </div>
+            <div class="step-footer">
+              <span>Kysnutie: 30 ? 40 min</span>
+              <span>Video: 12:08</span>
+            </div>
+          </article>
+
+          <article class="step">
+            <div class="step-header">
+              <input type="checkbox" id="step-8" />
+              <div>
+                <h3>Pe?enie a dochladenie</h3>
+                <p>
+                  Pe? v r?re vyhriatej na 230&nbsp;?C pribli?ne 20 ? 25 min?t, k?m povrch pekne nezhnedne.
+                  Pred kr?jan?m nechaj focacciu aspo? 15 min odd?chnu? na mrie?ke.
+                </p>
+              </div>
+            </div>
+            <div class="step-footer">
+              <span>Pe?enie: 20 ? 25 min</span>
+              <span>Video: 14:55</span>
+            </div>
+          </article>
+        </div>
+
+        <div class="progress-tracker">
+          <div class="progress-bar" aria-hidden="true">
+            <div class="progress-bar-fill" id="progress-bar-fill"></div>
+          </div>
+          <div class="progress-status" id="progress-status">0 / 8 krokov hotov?ch</div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      In?pir?cia pod?a videa
+      <a href="https://www.youtube.com/watch?v=O1WQTKuWWfM" target="_blank" rel="noopener">
+        Perfect Homemade Focaccia (YouTube)
+      </a>
+      ? Buon appetito!
+    </footer>
+
+    <script>
+      const display = document.getElementById('timer-display');
+      const startBtn = document.getElementById('start-btn');
+      const stopBtn = document.getElementById('stop-btn');
+      const resetBtn = document.getElementById('reset-btn');
+
+      let startTime = 0;
+      let elapsedBeforePause = 0;
+      let timerInterval = null;
+
+      function formatTime(ms) {
+        const totalSeconds = Math.floor(ms / 1000);
+        const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+        const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+        const seconds = String(totalSeconds % 60).padStart(2, '0');
+        return `${hours}:${minutes}:${seconds}`;
+      }
+
+      function updateDisplay() {
+        const now = Date.now();
+        const diff = now - startTime + elapsedBeforePause;
+        display.textContent = formatTime(diff);
+      }
+
+      function startTimer() {
+        if (timerInterval) return;
+        startTime = Date.now();
+        timerInterval = setInterval(updateDisplay, 250);
+        startBtn.disabled = true;
+        stopBtn.disabled = false;
+        resetBtn.disabled = false;
+      }
+
+      function stopTimer() {
+        if (!timerInterval) return;
+        clearInterval(timerInterval);
+        timerInterval = null;
+        elapsedBeforePause += Date.now() - startTime;
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+      }
+
+      function resetTimer() {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        startTime = 0;
+        elapsedBeforePause = 0;
+        display.textContent = '00:00:00';
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+        resetBtn.disabled = true;
+      }
+
+      startBtn.addEventListener('click', startTimer);
+      stopBtn.addEventListener('click', stopTimer);
+      resetBtn.addEventListener('click', resetTimer);
+
+      const stepCheckboxes = document.querySelectorAll('.step-header input[type="checkbox"]');
+      const progressFill = document.getElementById('progress-bar-fill');
+      const progressStatus = document.getElementById('progress-status');
+
+      function updateProgress() {
+        const total = stepCheckboxes.length;
+        const completed = Array.from(stepCheckboxes).filter((cb) => cb.checked).length;
+        const percentage = Math.round((completed / total) * 100);
+        progressFill.style.width = `${percentage}%`;
+        progressStatus.textContent = `${completed} / ${total} krokov hotov?ch`;
+
+        document.documentElement.style.setProperty('--sunset', completed === total ? '#f2855e' : '#f2a65a');
+      }
+
+      stepCheckboxes.forEach((checkbox) => {
+        checkbox.addEventListener('change', updateProgress);
+      });
+
+      updateProgress();
+    </script>
+  </body>
+</html>
